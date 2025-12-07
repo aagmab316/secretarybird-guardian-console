@@ -1,56 +1,88 @@
-// Lightweight typed API client with governance-aware handling
-import { API_BASE } from "./config";
+// src/lib/api.ts
+import { getApiBaseUrl } from "./config";
 
-type ApiResponse<T> = { ok: true; data: T } | { ok: false; status: number; error?: any; explanation_for_humans?: string };
+export interface ApiErrorPayload {
+  message?: string;
+  code?: string;
+  explanation_for_humans?: string;
+  [key: string]: unknown;
+}
 
-async function request<T>(path: string, init: RequestInit = {}): Promise<ApiResponse<T>> {
-  const url = `${API_BASE.replace(/\/$/, "")}${path.startsWith("/") ? "" : "/"}${path}`;
-  const res = await fetch(url, {
-    credentials: "include",
+export type ApiResponse<T> =
+  | { ok: true; data: T }
+  | {
+      ok: false;
+      status: number;
+      error?: ApiErrorPayload;
+      isUnauthorized: boolean;
+      isForbidden: boolean;
+      isValidationError: boolean;
+    };
+
+async function request<T = unknown>(
+  path: string,
+  init: RequestInit = {},
+): Promise<ApiResponse<T>> {
+  const base = getApiBaseUrl();
+  const url = `${base}${path.startsWith("/") ? path : `/${path}`}`;
+
+  const response = await fetch(url, {
     headers: {
       "Content-Type": "application/json",
-      ...(init.headers || {}),
+      ...(init.headers ?? {}),
     },
+    credentials: "include", // keep if you use cookies; remove if token-based only
     ...init,
   });
 
-  const contentType = res.headers.get("content-type") || "";
-  let body: any = null;
-  if (contentType.includes("application/json")) {
-    body = await res.json();
-  } else {
-    body = await res.text();
+  let payload: unknown;
+  try {
+    payload = await response.json();
+  } catch {
+    payload = undefined;
   }
 
-  if (res.ok) {
-    return { ok: true, data: body as T };
+  if (!response.ok) {
+    const errorPayload = (payload ?? {}) as ApiErrorPayload;
+    return {
+      ok: false,
+      status: response.status,
+      error: errorPayload,
+      isUnauthorized: response.status === 401,
+      isForbidden: response.status === 403,
+      isValidationError: response.status === 400 || response.status === 422,
+    };
   }
 
-  // Governance-aware handling: backend may return explanation_for_humans
-  const explanation = body?.explanation_for_humans || body?.message || undefined;
-
-  return { ok: false, status: res.status, error: body, explanation_for_humans: explanation };
+  return { ok: true, data: payload as T };
 }
 
-/**
- * Example API surface. Expand this according to your backend endpoints.
- */
+// ---- Example typed endpoints ----
+
+export interface HealthResponse {
+  status: "ok";
+  version?: string;
+}
+
+export interface GuardianFirewallEvent {
+  id: string;
+  risk_level: "LOW" | "MEDIUM" | "HIGH";
+  category: string;
+  subject_type: string;
+  source: string;
+  created_at: string;
+  explanation_for_humans?: string;
+}
+
 export const api = {
-  cases: {
-    list: async () => request<any[]>("/cases"),
-    get: async (id: string) => request<any>(`/cases/${encodeURIComponent(id)}`),
-    update: async (id: string, payload: any) =>
-      request<any>(`/cases/${encodeURIComponent(id)}`, {
-        method: "PUT",
-        body: JSON.stringify(payload),
-      }),
+  health() {
+    return request<HealthResponse>("/health");
   },
-  auth: {
-    me: async () => request<any>("/auth/me"),
-    login: async (payload: { username: string; password: string }) =>
-      request<any>("/auth/login", { method: "POST", body: JSON.stringify(payload) }),
-    logout: async () => request<void>("/auth/logout", { method: "POST" }),
+
+  listFirewallEventsForHousehold(householdId: string) {
+    // adjust path to match your FastAPI route name
+    return request<GuardianFirewallEvent[]>(
+      `/firewall/households/${householdId}/events`,
+    );
   },
 };
-
-export type Api = typeof api;

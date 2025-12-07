@@ -1,4 +1,8 @@
+import { useApiHealth } from "../system/hooks/useApiHealth";
+
 export function ExamplePage() {
+  const { data, loading, errorExplanation } = useApiHealth();
+
   return (
     <div className="space-y-4">
       <h1 className="text-2xl font-semibold text-slate-50">
@@ -10,6 +14,32 @@ export function ExamplePage() {
         tools for operators. Everything should stay calm, clear, and
         trauma-informed.
       </p>
+
+      {/* API Health Check */}
+      <section className="rounded-xl border border-slate-800 bg-slate-900 p-4">
+        <h2 className="text-sm font-semibold text-slate-200">
+          Guardian API status
+        </h2>
+
+        {loading && (
+          <p className="mt-2 text-sm text-slate-400">
+            Checking connection to the Guardian backend…
+          </p>
+        )}
+
+        {!loading && data && (
+          <p className="mt-2 text-sm text-emerald-300">
+            ✓ Connected · status: {data.status}
+            {data.version ? ` · v${data.version}` : null}
+          </p>
+        )}
+
+        {!loading && errorExplanation && (
+          <p className="mt-2 text-sm text-amber-300">{errorExplanation}</p>
+        )}
+      </section>
+
+      {/* Next Steps */}
       <div className="rounded-xl border border-slate-800 bg-slate-900/70 p-4 text-sm text-slate-200">
         <p className="font-medium">Next steps</p>
         <ul className="mt-2 list-disc space-y-1 pl-5 text-slate-300">

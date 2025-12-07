@@ -3,7 +3,7 @@ import { Navigate, useLocation } from "react-router-dom";
 import { useAuthContext } from "../../contexts/AuthContext";
 
 /**
- * ProtectedRoute now respects AuthContext.
+ * ProtectedRoute respects AuthContext.
  * If unauthenticated, redirect to /login.
  * While loading show a minimal loading indicator.
  */

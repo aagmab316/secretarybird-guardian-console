@@ -3,7 +3,7 @@ import { api } from "../lib/api";
 
 /**
  * Minimal AuthContext:
- * - stores a token flag (for now) and user info
+ * - stores user info
  * - exposes login/logout, and a method to refresh current user (me)
  * Replace with your actual auth mechanism (JWT cookie, OAuth, etc.)
  */

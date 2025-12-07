@@ -1,54 +1,66 @@
-import React, { createContext, useContext, useEffect, useState, PropsWithChildren } from "react";
-import { api } from "../lib/api";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+  type ReactNode,
+} from "react";
 
-/**
- * Minimal AuthContext:
- * - stores user info
- * - exposes login/logout, and a method to refresh current user (me)
- * Replace with your actual auth mechanism (JWT cookie, OAuth, etc.)
- */
-
-type User = { id: string; name?: string; email?: string; roles?: string[] } | null;
+type User = {
+  id: string;
+  name: string;
+  role: "operator" | "supervisor" | "admin";
+};
 
 type AuthContextValue = {
-  user: User;
+  user: User | null;
   loading: boolean;
-  refresh: () => Promise<void>;
+  loginAsDemo: () => Promise<void>;
   logout: () => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
-export function AuthProvider({ children }: PropsWithChildren) {
-  const [user, setUser] = useState<User>(null);
+export function AuthProvider({ children }: { children: ReactNode }) {
+  const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
-  async function refresh() {
-    setLoading(true);
-    const res = await api.auth.me();
-    if (res.ok) {
-      setUser(res.data);
-    } else {
-      setUser(null);
-    }
+  // Pretend to load a session from storage / API
+  useEffect(() => {
+    // In future: call real backend /localStorage here
     setLoading(false);
+  }, []);
+
+  async function loginAsDemo() {
+    setUser({
+      id: "demo-operator",
+      name: "Demo Operator",
+      role: "operator",
+    });
   }
 
   async function logout() {
-    await api.auth.logout();
     setUser(null);
   }
 
-  useEffect(() => {
-    // On mount check current user; backend should read cookie or session
-    refresh().catch(() => setLoading(false));
-  }, []);
+  const value = useMemo(
+    () => ({
+      user,
+      loading,
+      loginAsDemo,
+      logout,
+    }),
+    [user, loading],
+  );
 
-  return <AuthContext.Provider value={{ user, loading, refresh, logout }}>{children}</AuthContext.Provider>;
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
-export function useAuthContext() {
+export function useAuth() {
   const ctx = useContext(AuthContext);
-  if (!ctx) throw new Error("useAuthContext must be used inside AuthProvider");
+  if (!ctx) {
+    throw new Error("useAuth must be used within <AuthProvider>");
+  }
   return ctx;
 }

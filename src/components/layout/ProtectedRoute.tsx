@@ -1,29 +1,21 @@
-import React, { PropsWithChildren } from "react";
-import { Navigate, useLocation } from "react-router-dom";
-import { useAuthContext } from "../../contexts/AuthContext";
+import { Navigate, Outlet, useLocation } from "react-router-dom";
+import { useAuth } from "../../contexts/AuthContext";
 
-/**
- * ProtectedRoute respects AuthContext.
- * If unauthenticated, redirect to /login.
- * While loading show a minimal loading indicator.
- */
-export default function ProtectedRoute({ children }: PropsWithChildren) {
-  const { user, loading } = useAuthContext();
-  const loc = useLocation();
+export function ProtectedRoute() {
+  const { user, loading } = useAuth();
+  const location = useLocation();
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div role="status" aria-live="polite">
-          Loading...
-        </div>
+      <div className="min-h-screen flex items-center justify-center bg-slate-950 text-slate-100">
+        Checking permissions…
       </div>
     );
   }
 
   if (!user) {
-    return <Navigate to="/login" state={{ from: loc }} replace />;
+    return <Navigate to="/login" replace state={{ from: location }} />;
   }
 
-  return <>{children}</>;
+  return <Outlet />;
 }

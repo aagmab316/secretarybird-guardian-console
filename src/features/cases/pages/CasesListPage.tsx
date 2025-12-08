@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import React from "react";
 import { Link } from "react-router-dom";
 import { api, Case } from "../../../lib/api";
 
@@ -34,6 +35,54 @@ const priorityColor = (risk: number): string => {
  *
  * Operators can click any case to view full details and manage risk observations.
  */
+type CaseRowProps = {
+  caseData: Case;
+};
+
+const CaseRow = React.memo(({ caseData }: CaseRowProps) => {
+  const statusLabel = statusLabels[caseData.status] || caseData.status;
+  const priority = priorityFromRisk(caseData.risk_level);
+  const priorityClass = priorityColor(caseData.risk_level);
+
+  return (
+    <tr
+      className="border-b border-slate-700 last:border-b-0 hover:bg-slate-800/40 transition-colors"
+    >
+      <td className="px-6 py-4 font-medium text-slate-100">
+        {caseData.title}
+      </td>
+      <td className="px-6 py-4 text-slate-400 font-mono text-xs">
+        #{caseData.id}
+      </td>
+      <td className="px-6 py-4">
+        <span
+          className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium border ${priorityClass}`}
+        >
+          {priority}
+        </span>
+      </td>
+      <td className="px-6 py-4 text-slate-300">
+        {statusLabel}
+      </td>
+      <td className="px-6 py-4 text-slate-400 text-xs">
+        {new Date(caseData.created_at).toLocaleDateString("en-US", {
+          month: "short",
+          day: "numeric",
+          year: "numeric",
+        })}
+      </td>
+      <td className="px-6 py-4 text-right">
+        <Link
+          to={`/cases/${caseData.id}`}
+          className="inline-flex items-center rounded-lg border border-slate-700 bg-slate-900 px-3 py-1.5 text-xs font-medium text-slate-100 hover:bg-slate-800"
+        >
+          View
+        </Link>
+      </td>
+    </tr>
+  );
+});
+
 export function CasesListPage() {
   const [cases, setCases] = useState<Case[]>([]);
   const [state, setState] = useState<LoadState>("idle");
@@ -150,51 +199,10 @@ export function CasesListPage() {
                     </th>
                   </tr>
                 </thead>
-                <tbody>
-                  {cases.map((c) => {
-                    const statusLabel = statusLabels[c.status] || c.status;
-                    const priority = priorityFromRisk(c.risk_level);
-                    const priorityClass = priorityColor(c.risk_level);
-
-                    return (
-                      <tr
-                        key={c.id}
-                        className="border-b border-slate-700 last:border-b-0 hover:bg-slate-800/40 transition-colors"
-                      >
-                        <td className="px-6 py-4 font-medium text-slate-100">
-                          {c.title}
-                        </td>
-                        <td className="px-6 py-4 text-slate-400 font-mono text-xs">
-                          #{c.id}
-                        </td>
-                        <td className="px-6 py-4">
-                          <span
-                            className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium border ${priorityClass}`}
-                          >
-                            {priority}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4 text-slate-300">
-                          {statusLabel}
-                        </td>
-                        <td className="px-6 py-4 text-slate-400 text-xs">
-                          {new Date(c.created_at).toLocaleDateString("en-US", {
-                            month: "short",
-                            day: "numeric",
-                            year: "numeric",
-                          })}
-                        </td>
-                        <td className="px-6 py-4 text-right">
-                          <Link
-                            to={`/cases/${c.id}`}
-                            className="inline-flex items-center rounded-lg border border-slate-700 bg-slate-900 px-3 py-1.5 text-xs font-medium text-slate-100 hover:bg-slate-800"
-                          >
-                            View
-                          </Link>
-                        </td>
-                      </tr>
-                    );
-                  })}
+                <tbody className="divide-y divide-slate-700">
+                  {cases.map((c) => (
+                    <CaseRow key={c.id} caseData={c} />
+                  ))}
                 </tbody>
               </table>
             </div>

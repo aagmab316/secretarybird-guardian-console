@@ -1,4 +1,4 @@
-import { Link, Route, Routes } from "react-router-dom";
+import { Link, Route, Routes, NavLink } from "react-router-dom";
 import { ProtectedRoute } from "./components/layout/ProtectedRoute";
 import { ExamplePage } from "./features/example/ExamplePage";
 import { FirewallEventsPage } from "./features/firewall/FirewallEventsPage";
@@ -64,16 +64,43 @@ export default function App() {
             </p>
             <p className="text-sm text-slate-200">Guardian Console</p>
           </div>
-          <nav className="flex items-center gap-4 text-sm text-slate-200">
-            <Link className="hover:text-emerald-300" to="/">
+          <nav className="flex items-center gap-4 text-sm">
+            <NavLink
+              className={({ isActive }) =>
+                `transition-colors ${
+                  isActive
+                    ? "text-emerald-300 font-semibold"
+                    : "text-slate-200 hover:text-emerald-300"
+                }`
+              }
+              to="/"
+            >
               Overview
-            </Link>
-            <Link className="hover:text-emerald-300" to="/dashboard">
+            </NavLink>
+            <NavLink
+              className={({ isActive }) =>
+                `transition-colors ${
+                  isActive
+                    ? "text-emerald-300 font-semibold"
+                    : "text-slate-200 hover:text-emerald-300"
+                }`
+              }
+              to="/dashboard"
+            >
               Dashboard
-            </Link>
-            <Link className="hover:text-emerald-300" to="/cases">
+            </NavLink>
+            <NavLink
+              className={({ isActive }) =>
+                `transition-colors ${
+                  isActive
+                    ? "text-emerald-300 font-semibold"
+                    : "text-slate-200 hover:text-emerald-300"
+                }`
+              }
+              to="/cases"
+            >
               Cases
-            </Link>
+            </NavLink>
           </nav>
         </div>
       </header>

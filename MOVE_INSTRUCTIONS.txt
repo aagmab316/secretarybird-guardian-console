@@ -1,0 +1,37 @@
+DIRECTORY MOVE INSTRUCTIONS
+===========================
+
+The directory is currently locked by a running process (likely VS Code, npm, or a terminal).
+
+To move E:\secretarybird-guardian-console to E:\Seceretarybird\secretarybird-guardian-console:
+
+Option 1: Using File Explorer (Recommended)
+--------------------------------------------
+1. Close VS Code if it's open in this directory
+2. Stop any running npm dev server (Ctrl+C in terminal)
+3. Close any terminals with this directory as working directory
+4. Open File Explorer
+5. Navigate to E:\
+6. Drag "secretarybird-guardian-console" folder into "Seceretarybird" folder
+
+Option 2: Using Command Prompt
+-------------------------------
+1. Close all editors and terminals using this directory
+2. Open a NEW Command Prompt (not in this directory)
+3. Run:
+   move "E:\secretarybird-guardian-console" "E:\Seceretarybird\"
+
+Option 3: Using PowerShell
+---------------------------
+1. Close all editors and terminals using this directory
+2. Open a NEW PowerShell window
+3. Run:
+   Move-Item -Path "E:\secretarybird-guardian-console" -Destination "E:\Seceretarybird\"
+
+After Moving:
+-------------
+The new path will be: E:\Seceretarybird\secretarybird-guardian-console
+
+You can then:
+cd E:\Seceretarybird\secretarybird-guardian-console
+npm run dev

@@ -195,7 +195,9 @@ export function CaseDetailPage() {
           </div>
 
           {/* Risk Panel */}
-          {caseId && <CaseRiskPanel caseId={caseId} />}
+          {caseId && caseData && (
+            <CaseRiskPanel caseId={caseId} householdId={caseData.household_id} />
+          )}
         </div>
 
         {/* Right column: Case metadata */}

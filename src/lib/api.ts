@@ -87,6 +87,7 @@ export interface Case {
   category: string;
   risk_level: number;
   status: string;
+  household_id?: string;
   created_at: string;
   updated_at: string;
 }

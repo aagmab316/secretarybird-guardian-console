@@ -1,9 +1,11 @@
 import React, { useState } from "react";
 import { useCaseRiskObservation } from "../hooks/useCaseRiskObservation";
+import { useFirewallEventsForHousehold } from "../../firewall/hooks/useFirewallEventsForHousehold";
 import type { RiskLevel } from "../../../lib/apiTypes";
 
 interface CaseRiskPanelProps {
   caseId: string;
+  householdId?: string;
 }
 
 const riskOptions: { value: RiskLevel; label: string }[] = [
@@ -12,9 +14,12 @@ const riskOptions: { value: RiskLevel; label: string }[] = [
   { value: "HIGH", label: "High – urgent concern" },
 ];
 
-export const CaseRiskPanel: React.FC<CaseRiskPanelProps> = ({ caseId }) => {
+export const CaseRiskPanel: React.FC<CaseRiskPanelProps> = ({ caseId, householdId }) => {
   const { observations, loading, saving, error, recordObservation } =
     useCaseRiskObservation(caseId);
+  
+  const { events: firewallEvents, loading: firewallLoading } =
+    useFirewallEventsForHousehold(householdId || null);
 
   const [narrative, setNarrative] = useState("");
   const [riskLevel, setRiskLevel] = useState<RiskLevel>("LOW");
@@ -185,6 +190,72 @@ export const CaseRiskPanel: React.FC<CaseRiskPanelProps> = ({ caseId }) => {
               </p>
             </article>
           ))}
+        </div>
+      )}
+
+      {/* Firewall Events Section */}
+      {householdId && (
+        <div className="mt-4 border-t border-slate-200 pt-4">
+          <h3 className="mb-2 text-sm font-semibold text-slate-800">
+            Recent Protection Events
+          </h3>
+          <p className="mb-3 text-[10px] text-slate-500">
+            Automated digital protection signals for this household
+          </p>
+
+          {firewallLoading && (
+            <p className="text-xs text-slate-500">Loading events…</p>
+          )}
+
+          {!firewallLoading && firewallEvents.length === 0 && (
+            <p className="text-xs text-slate-500">
+              No recent protection events recorded.
+            </p>
+          )}
+
+          {!firewallLoading && firewallEvents.length > 0 && (
+            <div className="max-h-48 space-y-2 overflow-y-auto">
+              {firewallEvents.map((event) => (
+                <div
+                  key={event.id}
+                  className="rounded-lg border border-slate-200 bg-slate-50 p-2.5 text-xs"
+                >
+                  <div className="mb-1 flex items-start justify-between gap-2">
+                    <div className="flex flex-wrap items-center gap-1">
+                      <span className="inline-flex items-center rounded-full bg-slate-200 px-2 py-0.5 text-[10px] font-medium text-slate-700">
+                        {event.category}
+                      </span>
+                      <span className="text-[10px] text-slate-500">
+                        via {event.source}
+                      </span>
+                    </div>
+                    <span
+                      className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-semibold ${
+                        event.risk_level === "HIGH"
+                          ? "border border-red-200 bg-red-100 text-red-800"
+                          : event.risk_level === "MEDIUM"
+                            ? "border border-amber-200 bg-amber-100 text-amber-800"
+                            : "border border-emerald-200 bg-emerald-100 text-emerald-800"
+                      }`}
+                    >
+                      {event.risk_level}
+                    </span>
+                  </div>
+                  <p className="text-[11px] text-slate-700">
+                    {event.description}
+                  </p>
+                  {event.explanation_for_humans && (
+                    <p className="mt-1 text-[10px] text-slate-600 italic">
+                      {event.explanation_for_humans}
+                    </p>
+                  )}
+                  <p className="mt-1 text-[9px] text-slate-500">
+                    {new Date(event.occurred_at).toLocaleString()}
+                  </p>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       )}
     </section>

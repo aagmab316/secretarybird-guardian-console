@@ -28,6 +28,7 @@ export function useFirewallEvents(
       return;
     }
 
+    const validHouseholdId = householdId as string;
     let cancelled = false;
 
     async function load() {
@@ -35,7 +36,7 @@ export function useFirewallEvents(
       setErrorMessage(null);
       setGovernanceExplanation(null);
 
-      const res = await api.listFirewallEventsForHousehold(householdId!);
+      const res = await api.listFirewallEventsForHousehold(validHouseholdId);
 
       if (cancelled) return;
 
@@ -56,7 +57,7 @@ export function useFirewallEvents(
         return;
       }
 
-      setEvents(res.data);
+      setEvents((res.data as any) ?? []);
       setState("success");
     }
 

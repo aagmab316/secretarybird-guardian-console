@@ -1,7 +1,10 @@
-import { Link, Route, Routes } from "react-router-dom";
+import { Link, Route, Routes, NavLink } from "react-router-dom";
 import { ProtectedRoute } from "./components/layout/ProtectedRoute";
 import { ExamplePage } from "./features/example/ExamplePage";
 import { FirewallEventsPage } from "./features/firewall/FirewallEventsPage";
+import { CasesListPage } from "./features/cases/pages/CasesListPage";
+import { CaseDetailPage } from "./features/cases/pages/CaseDetailPage";
+import { CaseRiskTabPage } from "./features/cases/pages/CaseRiskTabPage";
 import { useAuth } from "./contexts/AuthContext";
 
 function LandingPage() {
@@ -61,13 +64,43 @@ export default function App() {
             </p>
             <p className="text-sm text-slate-200">Guardian Console</p>
           </div>
-          <nav className="flex items-center gap-4 text-sm text-slate-200">
-            <Link className="hover:text-emerald-300" to="/">
+          <nav className="flex items-center gap-4 text-sm">
+            <NavLink
+              className={({ isActive }) =>
+                `transition-colors ${
+                  isActive
+                    ? "text-emerald-300 font-semibold"
+                    : "text-slate-200 hover:text-emerald-300"
+                }`
+              }
+              to="/"
+            >
               Overview
-            </Link>
-            <Link className="hover:text-emerald-300" to="/dashboard">
+            </NavLink>
+            <NavLink
+              className={({ isActive }) =>
+                `transition-colors ${
+                  isActive
+                    ? "text-emerald-300 font-semibold"
+                    : "text-slate-200 hover:text-emerald-300"
+                }`
+              }
+              to="/dashboard"
+            >
               Dashboard
-            </Link>
+            </NavLink>
+            <NavLink
+              className={({ isActive }) =>
+                `transition-colors ${
+                  isActive
+                    ? "text-emerald-300 font-semibold"
+                    : "text-slate-200 hover:text-emerald-300"
+                }`
+              }
+              to="/cases"
+            >
+              Cases
+            </NavLink>
           </nav>
         </div>
       </header>
@@ -78,6 +111,9 @@ export default function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route element={<ProtectedRoute />}>
             <Route path="/dashboard" element={<ExamplePage />} />
+            <Route path="/cases" element={<CasesListPage />} />
+            <Route path="/cases/:caseId" element={<CaseDetailPage />} />
+            <Route path="/cases/:caseId/risk" element={<CaseRiskTabPage />} />
             <Route
               path="/households/:householdId/firewall"
               element={<FirewallEventsPage />}

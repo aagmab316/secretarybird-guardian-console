@@ -5,6 +5,6 @@ import { expect, describe, it } from "vitest";
 describe("ExamplePage", () => {
   it("renders", () => {
     render(<ExamplePage />);
-    expect(screen.getByText(/Guardian Operator Dashboard/i)).toBeInTheDocument();
+    expect(screen.getByText(/Example Feature/i)).toBeInTheDocument();
   });
 });

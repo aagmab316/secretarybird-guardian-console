@@ -1,5 +1,10 @@
 // src/lib/api.ts
 import { getApiBaseUrl } from "./config";
+import type {
+  FirewallEvent,
+  CaseRiskObservation,
+  CreateCaseRiskObservationInput,
+} from "./apiTypes";
 
 export interface ApiErrorPayload {
   message?: string;
@@ -74,15 +79,62 @@ export interface GuardianFirewallEvent {
   explanation_for_humans?: string;
 }
 
+// Cases API types
+export interface Case {
+  id: number;
+  title: string;
+  description?: string;
+  category: string;
+  risk_level: number;
+  status: string;
+  household_id?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface CaseRiskObservationRequest {
+  narrative: string;
+  risk_level: "LOW" | "MEDIUM" | "HIGH";
+  signal_strength: number;
+  category?: string;
+}
+
 export const api = {
   health() {
     return request<HealthResponse>("/health");
   },
 
   listFirewallEventsForHousehold(householdId: string) {
-    // adjust path to match your FastAPI route name
-    return request<GuardianFirewallEvent[]>(
+    return request<FirewallEvent[]>(
       `/firewall/households/${householdId}/events`,
+    );
+  },
+
+  // Cases endpoints
+  getCase(caseId: number | string) {
+    return request<Case>(`/cases/${caseId}`);
+  },
+
+  listCases() {
+    return request<Case[]>("/cases");
+  },
+
+  listCaseRiskObservations(caseId: string | number) {
+    return request<CaseRiskObservation[]>(
+      `/cases/${caseId}/risk-observations`,
+    );
+  },
+
+  createCaseRiskObservation(
+    caseId: string | number,
+    input: CreateCaseRiskObservationInput,
+  ) {
+    return request<CaseRiskObservation>(
+      `/cases/${caseId}/risk-observations`,
+      {
+        method: "POST",
+        body: JSON.stringify(input),
+      },
     );
   },
 };

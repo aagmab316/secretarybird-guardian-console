@@ -1,6 +1,7 @@
 import { Link, Route, Routes } from "react-router-dom";
 import { ProtectedRoute } from "./components/layout/ProtectedRoute";
 import { ExamplePage } from "./features/example/ExamplePage";
+import { FirewallEventsPage } from "./features/firewall/FirewallEventsPage";
 import { useAuth } from "./contexts/AuthContext";
 
 function LandingPage() {
@@ -77,6 +78,10 @@ export default function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route element={<ProtectedRoute />}>
             <Route path="/dashboard" element={<ExamplePage />} />
+            <Route
+              path="/households/:householdId/firewall"
+              element={<FirewallEventsPage />}
+            />
           </Route>
         </Routes>
       </main>

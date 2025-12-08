@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { useApiHealth } from "../system/hooks/useApiHealth";
 
 export function ExamplePage() {
@@ -37,6 +38,26 @@ export function ExamplePage() {
         {!loading && errorExplanation && (
           <p className="mt-2 text-sm text-amber-300">{errorExplanation}</p>
         )}
+      </section>
+
+      {/* Firewall Events Demo */}
+      <section className="rounded-xl border border-slate-800 bg-slate-900 p-4">
+        <h2 className="text-sm font-semibold text-slate-200">
+          Firewall events (demo)
+        </h2>
+        <p className="mt-1 text-sm text-slate-400">
+          This link opens a demo view of Guardian Firewall decisions for a
+          sample household. Once real households are wired in, the IDs here
+          will come from the backend.
+        </p>
+        <div className="mt-3">
+          <Link
+            to="/households/demo-household/firewall"
+            className="inline-flex items-center rounded-lg bg-emerald-500 px-3 py-1.5 text-sm font-medium text-slate-950 hover:bg-emerald-400"
+          >
+            View firewall events for demo household
+          </Link>
+        </div>
       </section>
 
       {/* Next Steps */}

@@ -35,7 +35,7 @@ export function useFirewallEvents(
       setErrorMessage(null);
       setGovernanceExplanation(null);
 
-      const res = await api.listFirewallEventsForHousehold(householdId);
+      const res = await api.listFirewallEventsForHousehold(householdId!);
 
       if (cancelled) return;
 

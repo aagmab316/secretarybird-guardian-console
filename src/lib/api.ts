@@ -1,6 +1,10 @@
 // src/lib/api.ts
 import { getApiBaseUrl } from "./config";
-import type { FirewallEvent } from "./apiTypes";
+import type {
+  FirewallEvent,
+  CaseRiskObservation,
+  CreateCaseRiskObservationInput,
+} from "./apiTypes";
 
 export interface ApiErrorPayload {
   message?: string;
@@ -87,20 +91,10 @@ export interface Case {
   updated_at: string;
 }
 
-export interface CaseRiskObservation {
-  id: number;
-  case_id: number;
-  narrative: string;
-  risk_signal_strength: number; // 0-5
-  category: string;
-  created_at: string;
-  created_by?: string;
-  explanation_for_humans?: string;
-}
-
 export interface CaseRiskObservationRequest {
   narrative: string;
-  risk_signal_strength?: number;
+  risk_level: "LOW" | "MEDIUM" | "HIGH";
+  signal_strength: number;
   category?: string;
 }
 
@@ -116,7 +110,7 @@ export const api = {
   },
 
   // Cases endpoints
-  getCase(caseId: number) {
+  getCase(caseId: number | string) {
     return request<Case>(`/cases/${caseId}`);
   },
 
@@ -124,19 +118,21 @@ export const api = {
     return request<Case[]>("/cases");
   },
 
-  getCaseRiskObservations(caseId: number) {
-    return request<CaseRiskObservation[]>(`/cases/${caseId}/risk-observations`);
+  listCaseRiskObservations(caseId: string | number) {
+    return request<CaseRiskObservation[]>(
+      `/cases/${caseId}/risk-observations`,
+    );
   },
 
-  recordCaseRiskObservation(
-    caseId: number,
-    observation: CaseRiskObservationRequest,
+  createCaseRiskObservation(
+    caseId: string | number,
+    input: CreateCaseRiskObservationInput,
   ) {
     return request<CaseRiskObservation>(
       `/cases/${caseId}/risk-observations`,
       {
         method: "POST",
-        body: JSON.stringify(observation),
+        body: JSON.stringify(input),
       },
     );
   },

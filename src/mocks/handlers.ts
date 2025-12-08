@@ -39,11 +39,12 @@ const mockCases = [
 const mockRiskObservations: Record<number, any[]> = {
   1: [
     {
-      id: 101,
-      case_id: 1,
+      id: "obs-101",
+      case_id: "1",
       narrative:
         "Visited home on 12/4/2025. Living room showed minimal furnishings and dampness on walls. Three children present, all appearing clean and engaged. Mother reported recent job loss, expressed concern about utility payments.",
-      risk_signal_strength: 4,
+      risk_level: "HIGH",
+      signal_strength: 4,
       category: "home_conditions",
       created_at: "2025-12-04T14:00:00Z",
       created_by: "Maria Santos",
@@ -51,11 +52,12 @@ const mockRiskObservations: Record<number, any[]> = {
         "This observation indicates housing instability risk. Guardian recommends coordinating with utility assistance programs and employment services.",
     },
     {
-      id: 102,
-      case_id: 1,
+      id: "obs-102",
+      case_id: "1",
       narrative:
         "Phone check-in with mother. She reports accessing emergency assistance funds and connecting with local food bank. Discussed school enrollment status for youngest child.",
-      risk_signal_strength: 2,
+      risk_level: "LOW",
+      signal_strength: 2,
       category: "support_access",
       created_at: "2025-12-05T10:00:00Z",
       created_by: "James Chen",
@@ -63,11 +65,12 @@ const mockRiskObservations: Record<number, any[]> = {
   ],
   2: [
     {
-      id: 201,
-      case_id: 2,
+      id: "obs-201",
+      case_id: "2",
       narrative:
         "School reported 8 absences in past 4 weeks. Father reports transportation challenges. Discussed alternative school options closer to home.",
-      risk_signal_strength: 2,
+      risk_level: "MEDIUM",
+      signal_strength: 2,
       category: "education",
       created_at: "2025-11-25T13:30:00Z",
       created_by: "Alex Rodriguez",
@@ -164,11 +167,12 @@ export const handlers = [
     const body = await request.json() as any;
 
     const newObservation = {
-      id: Math.floor(Math.random() * 1000000),
-      case_id: caseId,
+      id: `obs-${Math.floor(Math.random() * 1000000)}`,
+      case_id: String(caseId),
       narrative: body.narrative,
-      risk_signal_strength: body.risk_signal_strength ?? 3,
-      category: body.category ?? "general",
+      risk_level: body.risk_level ?? "LOW",
+      signal_strength: body.signal_strength ?? 2,
+      category: body.category ?? undefined,
       created_at: new Date().toISOString(),
       created_by: "Current User",
     };

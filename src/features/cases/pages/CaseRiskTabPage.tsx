@@ -231,7 +231,7 @@ export function CaseRiskTabPage() {
       </div>
 
       {/* Risk Panel - Full Width */}
-      {caseId && <CaseRiskPanel caseId={parseInt(caseId, 10)} />}
+      {caseId && <CaseRiskPanel caseId={caseId} />}
     </div>
   );
 }

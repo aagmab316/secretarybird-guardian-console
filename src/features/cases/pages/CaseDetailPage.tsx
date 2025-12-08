@@ -195,7 +195,7 @@ export function CaseDetailPage() {
           </div>
 
           {/* Risk Panel */}
-          {caseId && <CaseRiskPanel caseId={parseInt(caseId, 10)} />}
+          {caseId && <CaseRiskPanel caseId={caseId} />}
         </div>
 
         {/* Right column: Case metadata */}

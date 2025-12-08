@@ -25,6 +25,8 @@ export const CaseRiskPanel: React.FC<CaseRiskPanelProps> = ({ caseId, householdI
   const [riskLevel, setRiskLevel] = useState<RiskLevel>("LOW");
   const [signalStrength, setSignalStrength] = useState(2); // 0–5
   const [category, setCategory] = useState("");
+  const [filterRiskLevel, setFilterRiskLevel] = useState<RiskLevel | "ALL">("ALL");
+  const [filterCategory, setFilterCategory] = useState<string>("ALL");
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -40,6 +42,18 @@ export const CaseRiskPanel: React.FC<CaseRiskPanelProps> = ({ caseId, householdI
     // Clear narrative only; keep chosen risk level
     setNarrative("");
   }
+
+  // Filter observations by risk level and category
+  const filteredObservations = observations.filter((obs) => {
+    const matchesRisk = filterRiskLevel === "ALL" || obs.risk_level === filterRiskLevel;
+    const matchesCategory = filterCategory === "ALL" || obs.category === filterCategory;
+    return matchesRisk && matchesCategory;
+  });
+
+  // Get unique categories for filter dropdown
+  const uniqueCategories = Array.from(
+    new Set(observations.map((o) => o.category).filter(Boolean))
+  ) as string[];
 
   return (
     <section className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
@@ -81,6 +95,9 @@ export const CaseRiskPanel: React.FC<CaseRiskPanelProps> = ({ caseId, householdI
               onChange={(e) => setNarrative(e.target.value)}
               placeholder="Describe behaviours, messages, or patterns in calm, non-blaming language…"
             />
+            <p className="mt-1 text-[10px] text-slate-600">
+              💡 <strong>Safe language:</strong> Focus on observable facts and behaviors. Avoid diagnostic labels or judgmental language. Example: "Parent responded quickly to text" not "Parent is responsible."
+            </p>
           </div>
 
           <div className="w-full space-y-2 md:w-56">
@@ -156,8 +173,58 @@ export const CaseRiskPanel: React.FC<CaseRiskPanelProps> = ({ caseId, householdI
       )}
 
       {!loading && observations.length > 0 && (
-        <div className="max-h-64 space-y-2 overflow-y-auto">
-          {observations.map((obs) => (
+        <div className="space-y-3">
+          {/* Filter controls */}
+          <div className="flex flex-col gap-2 md:flex-row md:items-center">
+            <div className="flex flex-1 flex-wrap gap-2">
+              <div className="flex-1 min-w-40">
+                <label className="mb-1 block text-[10px] font-semibold text-slate-600 uppercase">
+                  Risk level
+                </label>
+                <select
+                  value={filterRiskLevel}
+                  onChange={(e) =>
+                    setFilterRiskLevel(e.target.value as RiskLevel | "ALL")
+                  }
+                  className="w-full rounded-md border border-slate-200 bg-white p-1.5 text-xs text-slate-800 outline-none focus:border-emerald-400"
+                >
+                  <option value="ALL">All levels</option>
+                  <option value="LOW">Low</option>
+                  <option value="MEDIUM">Medium</option>
+                  <option value="HIGH">High</option>
+                </select>
+              </div>
+              <div className="flex-1 min-w-40">
+                <label className="mb-1 block text-[10px] font-semibold text-slate-600 uppercase">
+                  Category
+                </label>
+                <select
+                  value={filterCategory}
+                  onChange={(e) => setFilterCategory(e.target.value)}
+                  className="w-full rounded-md border border-slate-200 bg-white p-1.5 text-xs text-slate-800 outline-none focus:border-emerald-400"
+                >
+                  <option value="ALL">All categories</option>
+                  {uniqueCategories.map((cat) => (
+                    <option key={cat} value={cat}>
+                      {cat}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+            <p className="text-[10px] text-slate-500">
+              Showing {filteredObservations.length} of {observations.length}
+            </p>
+          </div>
+
+          {/* Observations list */}
+          {filteredObservations.length === 0 ? (
+            <p className="text-xs text-slate-500">
+              No observations match the selected filters.
+            </p>
+          ) : (
+            <div className="max-h-64 space-y-2 overflow-y-auto">
+              {filteredObservations.map((obs) => (
             <article
               key={obs.id}
               className="rounded-lg border border-slate-100 bg-white p-2.5 text-xs"
@@ -188,8 +255,18 @@ export const CaseRiskPanel: React.FC<CaseRiskPanelProps> = ({ caseId, householdI
               <p className="whitespace-pre-wrap text-[11px] text-slate-800">
                 {obs.narrative}
               </p>
+              <div className="mt-1.5 flex items-center justify-between gap-2 border-t border-slate-100 pt-1.5">
+                {obs.created_by && (
+                  <p className="text-[9px] text-slate-500">by {obs.created_by}</p>
+                )}
+                <span className="inline-flex items-center rounded-full bg-emerald-50 px-2 py-0.5 text-[9px] font-semibold text-emerald-700 border border-emerald-200">
+                  👁️ Visible to supervisors
+                </span>
+              </div>
             </article>
-          ))}
+              ))}
+            </div>
+          )}
         </div>
       )}
 

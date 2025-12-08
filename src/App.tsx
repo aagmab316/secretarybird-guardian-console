@@ -2,6 +2,9 @@ import { Link, Route, Routes } from "react-router-dom";
 import { ProtectedRoute } from "./components/layout/ProtectedRoute";
 import { ExamplePage } from "./features/example/ExamplePage";
 import { FirewallEventsPage } from "./features/firewall/FirewallEventsPage";
+import { CasesListPage } from "./features/cases/pages/CasesListPage";
+import { CaseDetailPage } from "./features/cases/pages/CaseDetailPage";
+import { CaseRiskTabPage } from "./features/cases/pages/CaseRiskTabPage";
 import { useAuth } from "./contexts/AuthContext";
 
 function LandingPage() {
@@ -68,6 +71,9 @@ export default function App() {
             <Link className="hover:text-emerald-300" to="/dashboard">
               Dashboard
             </Link>
+            <Link className="hover:text-emerald-300" to="/cases">
+              Cases
+            </Link>
           </nav>
         </div>
       </header>
@@ -78,6 +84,9 @@ export default function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route element={<ProtectedRoute />}>
             <Route path="/dashboard" element={<ExamplePage />} />
+            <Route path="/cases" element={<CasesListPage />} />
+            <Route path="/cases/:caseId" element={<CaseDetailPage />} />
+            <Route path="/cases/:caseId/risk" element={<CaseRiskTabPage />} />
             <Route
               path="/households/:householdId/firewall"
               element={<FirewallEventsPage />}

@@ -47,3 +47,14 @@ export interface CreateCaseRiskObservationInput {
   signal_strength: number;
   category?: string;
 }
+
+/** Darknet Shield RAG Search types */
+export interface SearchRequest {
+  query: string;
+  mode?: "standard" | "deep" | "summarized";
+}
+
+export interface SearchResponse {
+  answer: string;
+  citations: string[];
+}

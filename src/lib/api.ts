@@ -4,6 +4,8 @@ import type {
   FirewallEvent,
   CaseRiskObservation,
   CreateCaseRiskObservationInput,
+  SearchRequest,
+  SearchResponse,
 } from "./apiTypes";
 
 export interface ApiErrorPayload {
@@ -136,5 +138,13 @@ export const api = {
         body: JSON.stringify(input),
       },
     );
+  },
+
+  // Darknet Shield RAG Search
+  search(input: SearchRequest) {
+    return request<SearchResponse>("/search/", {
+      method: "POST",
+      body: JSON.stringify(input),
+    });
   },
 };

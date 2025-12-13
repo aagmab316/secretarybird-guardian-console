@@ -89,9 +89,9 @@
       "type": "object",
       "description": "Verification that all Harm Override Clause conditions were met.",
       "properties": {
-        "imminent_severity_met": { "type": "boolean" },
-        "least_intrusive_means_met": { "type": "boolean" },
-        "proportionality_met": { "type": "boolean" }
+        "imminent_severity_met": { "type": "boolean", "const": true },
+        "least_intrusive_means_met": { "type": "boolean", "const": true },
+        "proportionality_met": { "type": "boolean", "const": true }
       },
       "required": ["imminent_severity_met", "least_intrusive_means_met", "proportionality_met"]
     },

@@ -1,10 +1,3 @@
-// src/lib/config.ts
-declare global {
-  interface ImportMeta {
-    env: Record<string, string>;
-  }
-}
-
 const DEFAULT_API_BASE = "http://localhost:8000";
 
 export function getApiBaseUrl(): string {

@@ -58,3 +58,37 @@ export interface SearchResponse {
   answer: string;
   citations: string[];
 }
+
+/** Phishing Inoculator types */
+export type DrillStatus = "pending" | "active" | "completed" | "failed";
+export type ThreatType = "email_phishing" | "sms_smishing" | "voice_vishing" | "fake_delivery" | "fake_support";
+
+export interface PhishingDrill {
+  id: string;
+  title: string;
+  description: string;
+  target_user_id: string;
+  target_member_name: string;
+  threat_type: ThreatType;
+  status: DrillStatus;
+  scheduled_for: string; // ISO datetime
+  created_at: string;
+  context?: Record<string, unknown>;
+}
+
+export interface FamilyMember {
+  id: string;
+  name: string;
+  role: string; // "parent", "child", "guardian", "elder"
+  age?: number;
+  created_at: string;
+}
+
+export interface SecurityScore {
+  score: number; // 0-100
+  percentage: number; // 0-100
+  drills_completed: number;
+  passed: number;
+  needs_training: number;
+  last_updated: string;
+}

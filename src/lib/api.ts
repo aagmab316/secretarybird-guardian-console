@@ -102,6 +102,30 @@ export interface CaseRiskObservationRequest {
 }
 
 export const api = {
+  // Generic HTTP methods
+  get<T = unknown>(path: string) {
+    return request<T>(path, { method: "GET" });
+  },
+
+  post<T = unknown>(path: string, body?: unknown) {
+    return request<T>(path, {
+      method: "POST",
+      body: body ? JSON.stringify(body) : undefined,
+    });
+  },
+
+  put<T = unknown>(path: string, body?: unknown) {
+    return request<T>(path, {
+      method: "PUT",
+      body: body ? JSON.stringify(body) : undefined,
+    });
+  },
+
+  delete<T = unknown>(path: string) {
+    return request<T>(path, { method: "DELETE" });
+  },
+
+  // Specific typed endpoints
   health() {
     return request<HealthResponse>("/health");
   },

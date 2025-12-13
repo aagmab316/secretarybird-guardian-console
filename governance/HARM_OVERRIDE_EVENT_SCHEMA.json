@@ -3,6 +3,7 @@
   "title": "Harm Override Event Log",
   "description": "Structured log for any action where the AI overrides user consent based on the Harm Override Clause. This is a critical accountability mechanism.",
   "type": "object",
+  "additionalProperties": false,
   "properties": {
     "event_id": {
       "type": "string",
@@ -27,6 +28,7 @@
     "harm_assessment": {
       "type": "object",
       "description": "The AI's assessment of the harm that justified the override.",
+      "additionalProperties": false,
       "properties": {
         "type": {
           "type": "string",
@@ -53,8 +55,10 @@
     "subjects": {
       "type": "array",
       "description": "The individuals involved and their demographic priority classification.",
+      "minItems": 1,
       "items": {
         "type": "object",
+        "additionalProperties": false,
         "properties": {
           "role": {
             "type": "string",
@@ -87,6 +91,7 @@
     "applied_conditions": {
       "type": "object",
       "description": "Verification that all Harm Override Clause conditions were met.",
+      "additionalProperties": false,
       "properties": {
         "imminent_severity_met": { "type": "boolean", "const": true },
         "least_intrusive_means_met": { "type": "boolean", "const": true },
@@ -97,6 +102,7 @@
     "human_oversight": {
       "type": "object",
       "description": "Record of human review, whether prior or post-hoc.",
+      "additionalProperties": false,
       "properties": {
         "review_status": {
           "type": "string",

@@ -7,6 +7,9 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+# Audit logs (sensitive data)
+audit_events.jsonl
+
 node_modules
 dist
 dist-ssr

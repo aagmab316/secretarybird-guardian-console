@@ -74,7 +74,16 @@
     },
     "action_taken": {
       "type": "string",
-      "description": "The specific protective action performed (e.g., 'alerted_emergency_services', 'initiated_welfare_check', 'blocked_transaction')."
+      "description": "The specific protective action performed. Must be one of the predefined action types for consistency and auditability.",
+      "enum": [
+        "alerted_emergency_services",
+        "initiated_welfare_check",
+        "blocked_transaction",
+        "notified_guardian",
+        "restricted_access",
+        "escalated_to_human",
+        "other"
+      ]
     },
     "applied_conditions": {
       "type": "object",

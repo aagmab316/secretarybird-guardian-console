@@ -2,7 +2,26 @@
 import { v4 as uuidv4 } from 'uuid';
 import db from '../db/database.js';
 
-export const createDrill = (data: any) => {
+export interface CreateDrillInput {
+  tenantId: string;
+  title: string;
+  description?: string;
+  difficulty: number;
+}
+
+export interface DrillRecord {
+  id: string;
+  tenant_id: string;
+  title: string;
+  description: string;
+  difficulty: number;
+  status: string;
+  outcome: string | null;
+  completed_at: string | null;
+  created_at: string;
+}
+
+export const createDrill = (data: CreateDrillInput) => {
   const id = uuidv4();
 
   // Transaction: Create Drill + Write Audit Log
@@ -38,8 +57,8 @@ export const getDrillsForTenant = (tenantId: string) => {
     .all(tenantId);
 };
 
-export const getDrillById = (id: string) => {
-  return db.prepare(`SELECT * FROM drills WHERE id = ?`).get(id);
+export const getDrillById = (id: string): DrillRecord | undefined => {
+  return db.prepare(`SELECT * FROM drills WHERE id = ?`).get(id) as DrillRecord | undefined;
 };
 
 export type DrillOutcome = 'REPORTED' | 'CLICKED';
@@ -64,7 +83,7 @@ export const recordDrillAttempt = (id: string, outcome: DrillOutcome) => {
       INSERT INTO audit_logs (tenant_id, event_type, actor_id, metadata)
       VALUES (?, ?, ?, ?)
     `).run(
-      (drill as any).tenant_id,
+      drill.tenant_id,
       'DRILL_COMPLETED',
       'family-user',
       JSON.stringify({ drillId: id, outcome }),

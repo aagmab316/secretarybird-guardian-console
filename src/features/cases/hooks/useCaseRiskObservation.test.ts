@@ -31,7 +31,7 @@ describe("useCaseRiskObservation", () => {
     vi.spyOn(apiModule.api, "listCaseRiskObservations").mockResolvedValue({
       ok: true,
       data: mockObservations,
-    } as any);
+    } as ReturnType<typeof apiModule.api.listCaseRiskObservations> extends Promise<infer T> ? T : never);
 
     const { result } = renderHook(() => useCaseRiskObservation("1"));
 
@@ -65,12 +65,12 @@ describe("useCaseRiskObservation", () => {
     vi.spyOn(apiModule.api, "listCaseRiskObservations").mockResolvedValue({
       ok: true,
       data: [],
-    } as any);
+    } as ReturnType<typeof apiModule.api.listCaseRiskObservations> extends Promise<infer T> ? T : never);
 
     vi.spyOn(apiModule.api, "createCaseRiskObservation").mockResolvedValue({
       ok: true,
       data: newObservation,
-    } as any);
+    } as ReturnType<typeof apiModule.api.createCaseRiskObservation> extends Promise<infer T> ? T : never);
 
     const { result } = renderHook(() => useCaseRiskObservation("1"));
 

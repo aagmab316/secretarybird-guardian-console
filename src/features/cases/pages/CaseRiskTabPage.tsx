@@ -43,18 +43,17 @@ export function CaseRiskTabPage() {
   const [governanceExplanation, setGovernanceExplanation] =
     useState<string | null>(null);
 
-  useEffect(() => {
-    if (!caseId) {
-      setState("error");
-      setErrorMessage("No case ID provided.");
-      return;
-    }
+  // Validate caseId at render time (not in effect) to avoid set-state-in-effect lint error
+  const parsedCaseId = caseId ? parseInt(caseId, 10) : NaN;
+  const validationError = !caseId
+    ? "No case ID provided."
+    : isNaN(parsedCaseId)
+      ? "Invalid case ID format."
+      : null;
 
-    const parsedId = parseInt(caseId, 10);
-    if (isNaN(parsedId)) {
-      setState("error");
-      setErrorMessage("Invalid case ID format.");
-      return;
+  useEffect(() => {
+    if (validationError) {
+      return; // Skip fetch if validation fails
     }
 
     let cancelled = false;
@@ -64,7 +63,7 @@ export function CaseRiskTabPage() {
       setErrorMessage(null);
       setGovernanceExplanation(null);
 
-      const res = await api.getCase(parsedId);
+      const res = await api.getCase(parsedCaseId);
 
       if (cancelled) return;
 
@@ -94,7 +93,27 @@ export function CaseRiskTabPage() {
     return () => {
       cancelled = true;
     };
-  }, [caseId]);
+  }, [parsedCaseId, validationError]);
+
+  // Handle validation errors in render (derived from caseId)
+  if (validationError) {
+    return (
+      <div className="space-y-4">
+        <Link
+          to="/cases"
+          className="text-sky-400 hover:text-sky-300 text-sm font-medium inline-flex items-center gap-1"
+        >
+          ← Back to Cases
+        </Link>
+        <div className="bg-red-900/30 border border-red-800 rounded-lg p-4">
+          <h2 className="text-lg font-semibold text-red-300 mb-2">
+            Unable to Load Case
+          </h2>
+          <p className="text-slate-300">{validationError}</p>
+        </div>
+      </div>
+    );
+  }
 
   if (state === "loading") {
     return (

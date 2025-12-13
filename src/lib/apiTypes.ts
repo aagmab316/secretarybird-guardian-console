@@ -7,10 +7,12 @@ export type RiskLevel = "LOW" | "MEDIUM" | "HIGH";
 export interface FirewallEvent {
   id: string;
   household_id: string;
-  occurred_at: string; // ISO datetime
+  occurred_at?: string; // ISO datetime (backend v1 field)
+  created_at?: string; // ISO datetime (backend v2 field)
   source: string; // e.g. "WHATSAPP", "SMS", "WEB_FORM"
   category: string; // e.g. "SCAM", "FRAUD", "ABUSE"
-  description: string;
+  description?: string;
+  subject_type?: string; // Optional: e.g. "ELDER", "CHILD", "ADULT"
   risk_level: RiskLevel;
   metadata?: Record<string, unknown>;
   explanation_for_humans?: string;

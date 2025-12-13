@@ -110,7 +110,7 @@ export function FirewallEventsPanel({
 
                 <div className="flex items-center justify-between gap-2 text-[11px] text-slate-500">
                   <span>
-                    {new Date(ev.occurred_at).toLocaleDateString("en-US", {
+                    {new Date(ev.occurred_at ?? ev.created_at ?? "").toLocaleDateString("en-US", {
                       month: "short",
                       day: "numeric",
                       hour: "2-digit",

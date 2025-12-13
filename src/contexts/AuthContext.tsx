@@ -1,7 +1,6 @@
 import {
   createContext,
   useContext,
-  useEffect,
   useMemo,
   useState,
   type ReactNode,
@@ -24,13 +23,9 @@ const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  // Pretend to load a session from storage / API
-  useEffect(() => {
-    // In future: call real backend /localStorage here
-    setLoading(false);
-  }, []);
+  // Start with loading=false since we have no async init yet
+  // When real auth is added, initialize to true and set false in callback
+  const [loading] = useState(false);
 
   async function loginAsDemo() {
     setUser({
@@ -57,6 +52,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function useAuth() {
   const ctx = useContext(AuthContext);
   if (!ctx) {

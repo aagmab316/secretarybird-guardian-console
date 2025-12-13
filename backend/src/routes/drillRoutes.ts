@@ -3,6 +3,7 @@ import { Router } from 'express';
 import { z } from 'zod';
 import { randomUUID } from 'crypto';
 import { createDrill, getDrillsForTenant, getDrillById, recordDrillAttempt, type DrillOutcome } from '../controllers/drillController.js';
+import { getProgressByTenant, type DrillProgress } from '../controllers/drillProgress.js';
 
 const router = Router();
 
@@ -43,11 +44,28 @@ router.post('/', (req, res) => {
   }
 });
 
-// GET /api/drills/:tenantId (List)
+// GET /api/drills/:tenantId (List with Progress)
+// v0.9.6: Returns drills + per-drill progress derived from audit_logs
 router.get('/:tenantId', (req, res) => {
   try {
-    const drills = getDrillsForTenant(req.params.tenantId);
-    res.json(drills);
+    const tenantId = req.params.tenantId;
+    const drills = getDrillsForTenant(tenantId) as Array<{ id: string }>;
+    const progress = getProgressByTenant(tenantId);
+
+    // Merge progress into each drill (governance-safe: only drillId/outcome/timestamp)
+    const drillsWithProgress = drills.map((drill) => ({
+      ...drill,
+      progress: progress[drill.id] ?? {
+        drillId: drill.id,
+        attempts: 0,
+        lastOutcome: null,
+        lastAttemptAt: null,
+        completed: false,
+        xpEarned: 0,
+      } as DrillProgress,
+    }));
+
+    res.json(drillsWithProgress);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Database Error' });
@@ -85,8 +103,9 @@ router.patch('/:id/attempt', (req, res) => {
 
     const result = recordDrillAttempt(drillId, outcome as DrillOutcome);
     res.json(result);
-  } catch (err: any) {
-    if (err.message === 'DRILL_NOT_FOUND') {
+  } catch (err: unknown) {
+    const error = err as Error;
+    if (error.message === 'DRILL_NOT_FOUND') {
       auditLog('DRILL_ATTEMPT_NOT_FOUND', { requestId, drillId });
       return res.status(404).json({ error: 'Drill not found' });
     }

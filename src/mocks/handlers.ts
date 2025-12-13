@@ -1,5 +1,36 @@
 import { http, HttpResponse } from "msw";
 
+// Mock data types
+interface MockRiskObservation {
+  id: string;
+  case_id: string;
+  narrative: string;
+  risk_level: string;
+  signal_strength: number;
+  category: string;
+  created_at: string;
+  created_by: string;
+  explanation_for_humans?: string;
+}
+
+interface MockFirewallEvent {
+  id: string;
+  household_id: string;
+  occurred_at: string;
+  source: string;
+  category: string;
+  description: string;
+  risk_level: string;
+  explanation_for_humans?: string;
+}
+
+interface CreateObservationBody {
+  narrative: string;
+  risk_level?: string;
+  signal_strength?: number;
+  category?: string;
+}
+
 // Mock data
 const mockCases = [
   {
@@ -39,7 +70,7 @@ const mockCases = [
   },
 ];
 
-const mockRiskObservations: Record<number, any[]> = {
+const mockRiskObservations: Record<number, MockRiskObservation[]> = {
   1: [
     {
       id: "obs-101",
@@ -82,7 +113,7 @@ const mockRiskObservations: Record<number, any[]> = {
   3: [],
 };
 
-const mockFirewallEvents: Record<string, any[]> = {
+const mockFirewallEvents: Record<string, MockFirewallEvent[]> = {
   "demo-household": [
     {
       id: "fw-001",
@@ -167,15 +198,15 @@ export const handlers = [
 
   http.post("/cases/:caseId/risk-observations", async ({ params, request }) => {
     const caseId = parseInt(params.caseId as string);
-    const body = await request.json() as any;
+    const body = (await request.json()) as CreateObservationBody;
 
-    const newObservation = {
+    const newObservation: MockRiskObservation = {
       id: `obs-${Math.floor(Math.random() * 1000000)}`,
       case_id: String(caseId),
       narrative: body.narrative,
       risk_level: body.risk_level ?? "LOW",
       signal_strength: body.signal_strength ?? 2,
-      category: body.category ?? undefined,
+      category: body.category ?? "general",
       created_at: new Date().toISOString(),
       created_by: "Current User",
     };

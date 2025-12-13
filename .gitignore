@@ -7,6 +7,16 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+# Audit logs (sensitive data)
+audit_events.jsonl
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
 node_modules
 dist
 dist-ssr
@@ -31,3 +41,6 @@ dist-ssr
 # Testing
 coverage
 .vitest
+
+# TypeScript build info
+*.tsbuildinfo

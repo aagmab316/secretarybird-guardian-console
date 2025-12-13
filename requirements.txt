@@ -1,0 +1,2 @@
+# Python dependencies for GuardianLogger utility
+jsonschema>=4.0.0

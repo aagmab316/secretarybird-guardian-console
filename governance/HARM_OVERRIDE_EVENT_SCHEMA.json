@@ -81,8 +81,7 @@
         "blocked_transaction",
         "notified_guardian",
         "restricted_access",
-        "escalated_to_human",
-        "other"
+        "escalated_to_human"
       ]
     },
     "applied_conditions": {

@@ -10,7 +10,7 @@ This Charter defines the engagement rules for Artificial Intelligence systems ("
 
 ## 3. Allowed Contributions
 AI Members are authorized to:
-* **Analyze &amp; Draft:** Identify ambiguities in governance, draft policy text, and summarize complex data.
+* **Analyze & Draft:** Identify ambiguities in governance, draft policy text, and summarize complex data.
 * **Adversarial Testing:** Generate "Red Team" scenarios (e.g., prompt injection, bias stress-testing).
 * **Code Generation:** Produce implementation checklists, unit tests, and boilerplate code for human review.
 

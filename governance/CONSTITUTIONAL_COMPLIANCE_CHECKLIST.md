@@ -8,7 +8,7 @@
 - [ ] **Refusal Policy:** Is the "Zero Tolerance" filter active for violence, abuse, and self-harm?
 - [ ] **No "Fake Success":** Does the Agent explicitly state limitations instead of hallucinating actions?
 
-## II. Data &amp; Privacy
+## II. Data & Privacy
 - [ ] **PII Minimization:** Is PII stripped/encrypted before entering the model context (unless authorized)?
 - [ ] **Consent Gate:** Is there a mechanism to capture specific consent for data retention?
 - [ ] **Harm Override Logging:** Is the structured JSON logging enabled for any event that triggers a Harm Override?

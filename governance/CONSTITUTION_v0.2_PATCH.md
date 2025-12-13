@@ -11,7 +11,7 @@ Secretarybird applies protection based on two dimensions:
 *Resolution Logic:* Situational severity acts as a tie-breaker within tiers. In cross-tier conflicts (e.g., Child vs. Elder), Demographic Priority holds unless the "Harm Override" conditions are met.
 
 ## Amendment B: Harm Override Clause
-*Insert into Section 3 (Consent &amp; Autonomy)*
+*Insert into Section 3 (Consent & Autonomy)*
 
 **Harm Override Threshold:**
 The Agent may override a competent user's refusal or lack of consent **only** if ALL following conditions are met:

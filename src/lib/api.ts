@@ -21,10 +21,24 @@ export type ApiResponse<T> =
       ok: false;
       status: number;
       error?: ApiErrorPayload;
+      retryAfterSeconds?: number;
       isUnauthorized: boolean;
       isForbidden: boolean;
       isValidationError: boolean;
+      isRateLimited: boolean;
     };
+
+function parseRetryAfterSeconds(value: string | null): number | undefined {
+  if (!value) return undefined;
+  const asInt = Number.parseInt(value, 10);
+  if (Number.isFinite(asInt)) return Math.max(0, asInt);
+
+  // Retry-After can also be an HTTP date.
+  const asDateMs = Date.parse(value);
+  if (Number.isNaN(asDateMs)) return undefined;
+  const deltaSeconds = Math.ceil((asDateMs - Date.now()) / 1000);
+  return Math.max(0, deltaSeconds);
+}
 
 async function request<T = unknown>(
   path: string,
@@ -51,13 +65,18 @@ async function request<T = unknown>(
 
   if (!response.ok) {
     const errorPayload = (payload ?? {}) as ApiErrorPayload;
+    const retryAfterSeconds = parseRetryAfterSeconds(
+      response.headers.get("Retry-After"),
+    );
     return {
       ok: false,
       status: response.status,
       error: errorPayload,
+      retryAfterSeconds,
       isUnauthorized: response.status === 401,
       isForbidden: response.status === 403,
       isValidationError: response.status === 400 || response.status === 422,
+      isRateLimited: response.status === 429,
     };
   }
 

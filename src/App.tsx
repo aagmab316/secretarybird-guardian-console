@@ -5,7 +5,7 @@ import { FirewallEventsPage } from "./features/firewall/FirewallEventsPage";
 import { CasesListPage } from "./features/cases/pages/CasesListPage";
 import { CaseDetailPage } from "./features/cases/pages/CaseDetailPage";
 import { CaseRiskTabPage } from "./features/cases/pages/CaseRiskTabPage";
-import { useAuth } from "./contexts/AuthContext";
+import { LoginPage } from "./pages/LoginPage";
 
 function LandingPage() {
   return (
@@ -24,31 +24,6 @@ function LandingPage() {
       >
         Go to operator login
       </Link>
-    </section>
-  );
-}
-
-function LoginPage() {
-  const { loginAsDemo } = useAuth();
-
-  async function handleDemoLogin() {
-    await loginAsDemo();
-  }
-
-  return (
-    <section className="space-y-4 max-w-sm">
-      <h1 className="text-2xl font-semibold text-slate-50">Operator login</h1>
-      <p className="text-sm text-slate-300">
-        In production this will connect to the Secretarybird identity service.
-        For now, you can use a demo session to explore the console.
-      </p>
-      <button
-        type="button"
-        onClick={handleDemoLogin}
-        className="w-full rounded-lg bg-emerald-500 px-4 py-2 text-sm font-medium text-slate-950 hover:bg-emerald-400"
-      >
-        Continue with demo operator
-      </button>
     </section>
   );
 }

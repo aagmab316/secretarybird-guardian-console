@@ -93,7 +93,11 @@
           "type": "string",
           "enum": ["pre_approved", "post_escalated", "pending"]
         },
-        "reviewer_id": { "type": "string" },
+        "reviewer_id": { 
+          "type": "string",
+          "pattern": "^[a-zA-Z0-9_-]{3,64}$",
+          "description": "Alphanumeric identifier for the human reviewer (3-64 characters, allows underscore and hyphen)."
+        },
         "review_timestamp": { "type": "string", "format": "date-time" }
       }
     }

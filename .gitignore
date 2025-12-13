@@ -1,3 +1,9 @@
+# Python
+__pycache__/
+*.py[cod]
+
+# Local governance audit logs
+audit_events.jsonl
 # Logs
 logs
 *.log

@@ -1,0 +1,30 @@
+# docker-compose.yml
+# Secretarybird Guardian Console - Governance Core
+#
+# Usage:
+#   docker-compose up --build -d    # Build and start in background
+#   docker-compose logs -f          # Watch logs
+#   docker-compose down             # Stop and remove container
+#
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    container_name: secretarybird-governance-core
+    ports:
+      - "3001:3001"
+    volumes:
+      # Persist the SQLite database file on the host
+      - ./secretarybird.db:/app/secretarybird.db
+      # Sync source code for hot-reloading (optional, but good for dev)
+      - ./backend/src:/app/backend/src
+    environment:
+      - PORT=3001
+      - NODE_ENV=development
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3

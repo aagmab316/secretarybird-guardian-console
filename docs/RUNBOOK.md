@@ -1,91 +1,117 @@
 # 📘 Secretarybird Engineering Runbook
 
-## 🚑 Emergency: "Connection Refused" / "Phantom Listen"
+## 🖥️ Native Windows Startup (Preferred)
 
-If `npm run dev` or `pnpm dev` says it's running but the browser/curl **cannot connect**:
+The "Phantom Listen" bug in Windows/VS Code requires starting the backend in a **separate window** using `Start-Process`.
 
-### 1. Check Listener
+### Quick Start (Backend)
 ```powershell
-netstat -ano | findstr ":5173"
-netstat -ano | findstr ":3001"
-```
-**Must show `LISTENING`** for your port. If it does NOT, the process isn't actually bound.
-
-### 2. Fix Firewall (Administrator PowerShell)
-Run this **single line** in an **elevated PowerShell** (Run as Administrator):
-
-```powershell
-$n=(Get-Command node.exe).Source; $r='Secretarybird Allow Node (All Ports)'; Remove-NetFirewallRule -DisplayName $r -ErrorAction SilentlyContinue; New-NetFirewallRule -DisplayName $r -Direction Inbound -Action Allow -Program $n -Profile Domain,Private; Get-NetFirewallRule -DisplayName $r
+cd E:\Seceretarybird\secretarybird-guardian-console
+Start-Process -FilePath "cmd" -ArgumentList "/k", "cd /d E:\Seceretarybird\secretarybird-guardian-console && npx tsx backend/src/server.ts" -WindowStyle Normal
 ```
 
-This creates an inbound allow rule for `node.exe` on all ports (Domain/Private profiles).
+This opens a **new cmd window** that stays alive. Wait 2-3 seconds, then verify:
 
-### 3. Restart the Dev Server
-After adding the firewall rule, restart your dev server and re-check `netstat`.
+```powershell
+curl.exe http://127.0.0.1:3001/health
+# Expected: {"status":"ok","version":"0.9.1-governance"}
+```
+
+### Why Start-Process?
+VS Code's integrated terminal has process lifecycle issues on Windows. Spawning the server in a separate window keeps it alive.
 
 ---
 
-## 🚀 Startup Sequence (The "Happy Path")
+## 🐳 Docker Startup (Alternative)
 
-### 1. Start Backend (Governance Core)
-```bash
+If native Windows still fails, use Docker to bypass Windows firewall/WFP issues.
+
+### Quick Start
+```powershell
 cd secretarybird-guardian-console
-npm run dev:backend
+docker-compose up --build -d
 ```
 
-**Verify:**
-```bash
-curl http://127.0.0.1:3001/health
+### Verify
+```powershell
+curl.exe http://localhost:3001/health
+# Expected: {"status":"ok","version":"0.9.1-governance"}
 ```
-Expected: `{"status":"ok","version":"0.9.1-governance"}`
 
-### 2. Start Frontend (Family App)
-```bash
+### Watch Logs
+```powershell
+docker-compose logs -f
+```
+
+### Stop Container
+```powershell
+docker-compose down
+```
+
+---
+
+## 🚀 Full Startup Sequence
+
+### 1. Start Backend (Native Windows)
+```powershell
+cd E:\Seceretarybird\secretarybird-guardian-console
+Start-Process -FilePath "cmd" -ArgumentList "/k", "cd /d E:\Seceretarybird\secretarybird-guardian-console && npx tsx backend/src/server.ts" -WindowStyle Normal
+```
+
+### 2. Start Frontend (Vite)
+```powershell
 cd secretarybird-care-website
 pnpm dev
 ```
 
-**Access:** [http://127.0.0.1:5173/family/inoculator](http://127.0.0.1:5173/family/inoculator)
+**Access:** [http://localhost:5173/family/inoculator](http://localhost:5173/family/inoculator)
 
 ---
 
-## 🧪 Verification Data (Seed)
+## 🧪 Seed Demo Data
 
-If the UI is empty, seed the demo drill:
-
-```bash
-curl -X POST http://127.0.0.1:3001/api/drills \
-  -H "Content-Type: application/json" \
-  -d '{"tenantId": "family-demo", "title": "Welcome Drill", "description": "Learn to spot a fake login page.", "difficulty": 1}'
+```powershell
+curl.exe -X POST http://127.0.0.1:3001/api/drills -H "Content-Type: application/json" -d '{\"tenantId\": \"family-demo\", \"title\": \"Welcome Drill\", \"description\": \"Learn to spot a fake login page.\", \"difficulty\": 1}'
 ```
 
-Then refresh the UI at `/family/inoculator`.
+---
+
+## 🚑 Troubleshooting: Windows "Phantom Listen"
+
+If the backend logs "listening" but `curl` fails:
+
+### 1. Check Listener
+```powershell
+netstat -ano | findstr ":3001"
+```
+**Must show `LISTENING`**. If not, the process died silently.
+
+### 2. Use Start-Process (The Fix)
+The VS Code terminal doesn't keep Node processes alive properly. Use:
+```powershell
+Start-Process -FilePath "cmd" -ArgumentList "/k", "npx tsx backend/src/server.ts" -WindowStyle Normal
+```
+
+### 3. Firewall Rules (If Needed)
+Run in **elevated PowerShell**:
+```powershell
+$n=(Get-Command node.exe).Source; $r='Secretarybird Allow Node (All Ports)'; Remove-NetFirewallRule -DisplayName $r -ErrorAction SilentlyContinue; New-NetFirewallRule -DisplayName $r -Direction Inbound -Action Allow -Program $n -Profile Domain,Private,Public; Get-NetFirewallRule -DisplayName $r
+```
 
 ---
 
-## 🛠️ Environment Fixes Applied
-
-### Frontend (`secretarybird-care-website`)
-- **Heap size increased** to prevent Vite OOM crashes:
-  - `node --max-old-space-size=4096`
-- **Explicit host/port binding** to ensure firewall rules apply:
-  - `--host 127.0.0.1 --port 5173`
-
-### Backend (`secretarybird-guardian-console`)
-- **ESM import extensions** (`.js`) added for Node module resolution.
-- **Hardened startup** with global error traps and DB init try/catch.
-
----
-
-## 📋 Quick Reference Commands
+## 📋 Quick Reference
 
 | Task | Command |
 |------|---------|
-| Check port listener | `netstat -ano \| findstr ":PORT"` |
-| Check firewall rule | `Get-NetFirewallRule -DisplayName 'Secretarybird*'` |
-| Health check backend | `curl http://127.0.0.1:3001/health` |
-| List drills | `curl http://127.0.0.1:3001/api/drills/family-demo` |
+| Start backend (native) | `Start-Process -FilePath "cmd" -ArgumentList "/k", "npx tsx backend/src/server.ts"` |
+| Start backend (Docker) | `docker-compose up -d` |
+| Stop backend (Docker) | `docker-compose down` |
+| Health check | `curl.exe http://127.0.0.1:3001/health` |
+| List drills | `curl.exe http://127.0.0.1:3001/api/drills/family-demo` |
+| Check listener | `netstat -ano \| findstr ":3001"` |
+| Check firewall | `Get-NetFirewallRule -DisplayName 'Secretarybird*'` |
 
 ---
 
-*Last updated: v0.9.2 (December 2025)*
+*Last updated: v0.9.3 (December 2025)*

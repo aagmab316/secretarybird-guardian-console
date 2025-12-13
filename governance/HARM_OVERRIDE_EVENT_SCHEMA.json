@@ -44,7 +44,8 @@
         },
         "description": {
           "type": "string",
-          "description": "A plain-language summary of the assessed harm."
+          "description": "A plain-language summary of the assessed harm.",
+          "minLength": 30
         }
       },
       "required": ["type", "severity", "imminence", "description"]

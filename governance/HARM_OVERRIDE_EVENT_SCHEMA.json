@@ -1,0 +1,79 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://secretarybird.tech/schemas/harm-override-event.json",
+  "title": "Secretarybird Harm Override Event",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "event_id",
+    "event_type",
+    "timestamp_utc",
+    "constitution_version",
+    "request_context",
+    "risk_assessment",
+    "override_decision",
+    "accountability"
+  ],
+  "properties": {
+    "event_id": { "type": "string", "minLength": 16 },
+    "event_type": { "type": "string", "const": "HARM_OVERRIDE" },
+    "timestamp_utc": { "type": "string", "format": "date-time" },
+    "constitution_version": { "type": "string", "pattern": "^v\\d+\\.\\d+(\\.\\d+)?$" },
+    "request_context": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["channel", "language", "user_role", "subject_role", "request_summary"],
+      "properties": {
+        "channel": { "type": "string", "enum": ["web", "mobile", "sms", "whatsapp", "api", "admin_console"] },
+        "language": { "type": "string", "minLength": 2 },
+        "user_role": { "type": "string", "enum": ["child", "elder", "adult", "guardian", "staff", "unknown"] },
+        "subject_role": { "type": "string", "enum": ["child", "elder", "adult", "unknown"] },
+        "request_summary": { "type": "string", "minLength": 10 },
+        "case_id": { "type": ["string", "null"] }
+      }
+    },
+    "risk_assessment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["credible_risk", "imminence", "severity", "harm_domains", "evidence_signals"],
+      "properties": {
+        "credible_risk": { "type": "boolean" },
+        "imminence": { "type": "string", "enum": ["imminent", "ongoing", "potential", "unknown"] },
+        "severity": { "type": "string", "enum": ["catastrophic", "severe", "moderate", "low", "unknown"] },
+        "harm_domains": {
+          "type": "array",
+          "items": { "type": "string", "enum": ["physical", "sexual", "psychological", "financial_exploitation", "neglect", "other"] },
+          "minItems": 1
+        },
+        "evidence_signals": {
+          "type": "array",
+          "items": { "type": "string" },
+          "minItems": 1
+        }
+      }
+    },
+    "override_decision": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "override_applied": { "type": "boolean" },
+        "least_intrusive_means": { "type": "boolean" },
+        "proportionality": { "type": "boolean" },
+        "time_limited": { "type": "boolean" },
+        "actions_taken": {
+          "type": "array",
+          "items": { "type": "string" },
+          "minItems": 1
+        }
+      }
+    },
+    "accountability": {
+      "type": "object",
+      "properties": {
+        "logged": { "type": "boolean" },
+        "review_required": { "type": "boolean" },
+        "review_sla_hours": { "type": "integer", "minimum": 1 }
+      }
+    }
+  }
+}

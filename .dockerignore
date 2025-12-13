@@ -1,0 +1,53 @@
+# .dockerignore
+# Prevent copying unnecessary files into Docker build context
+
+# Dependencies (will be installed fresh in container)
+node_modules
+
+# Build outputs
+dist
+build
+
+# Local environment
+.env
+.env.*
+!.env.example
+
+# IDE / Editor
+.vscode
+.idea
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+
+# Database (mounted as volume instead)
+*.db
+
+# Git
+.git
+.gitignore
+
+# Test coverage
+coverage
+
+# Documentation (not needed in container)
+docs
+*.md
+!README.md
+
+# Frontend source (backend-only container)
+src
+public
+index.html
+vite.config.*
+vitest.config.*
+tsconfig.app.json
+tsconfig.node.json

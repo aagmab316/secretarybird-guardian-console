@@ -55,8 +55,9 @@ export function useFirewallEventsForHousehold(
             : "Network error while loading firewall events.";
         setError(msg);
       } finally {
-        if (cancelled) return;
-        setLoading(false);
+        if (!cancelled) {
+          setLoading(false);
+        }
       }
     }
 

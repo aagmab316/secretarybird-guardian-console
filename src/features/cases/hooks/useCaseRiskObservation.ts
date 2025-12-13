@@ -44,9 +44,10 @@ export function useCaseRiskObservation(
         if (res.ok && res.data) {
           setObservations(res.data);
         } else if (!res.ok) {
+          const errorRes = res as { error?: { explanation_for_humans?: string; message?: string } };
           const msg =
-            (res as any).error?.explanation_for_humans ||
-            (res as any).error?.message ||
+            errorRes.error?.explanation_for_humans ||
+            errorRes.error?.message ||
             "Something went wrong while loading case risk observations.";
           setError(msg);
         }
@@ -94,9 +95,10 @@ export function useCaseRiskObservation(
             // Prepend new observation
             setObservations((prev) => [res.data!, ...prev]);
           } else if (!res.ok) {
+            const errorRes = res as { error?: { explanation_for_humans?: string; message?: string } };
             const msg =
-              (res as any).error?.explanation_for_humans ||
-              (res as any).error?.message ||
+              errorRes.error?.explanation_for_humans ||
+              errorRes.error?.message ||
               "Something went wrong while saving the risk observation.";
             setError(msg);
           }

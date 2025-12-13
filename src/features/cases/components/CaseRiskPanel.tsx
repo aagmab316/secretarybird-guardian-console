@@ -327,7 +327,7 @@ export const CaseRiskPanel: React.FC<CaseRiskPanelProps> = ({ caseId, householdI
                     </p>
                   )}
                   <p className="mt-1 text-[9px] text-slate-500">
-                    {new Date(event.occurred_at).toLocaleString()}
+                    {new Date(event.occurred_at ?? event.created_at ?? "").toLocaleString()}
                   </p>
                 </div>
               ))}

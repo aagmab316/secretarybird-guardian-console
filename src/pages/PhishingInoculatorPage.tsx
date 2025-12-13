@@ -59,7 +59,7 @@ export const PhishingInoculatorPage = () => {
     }
   };
 
-  const handleCreateDrill = async (drillData: unknown) => {
+  const handleCreateDrill = async (drillData: DrillFormData) => {
     const res = await api.post<PhishingDrill>('/api/inoculator/drills', drillData);
     if (res.ok) {
       setDrills([...drills, res.data]);
@@ -230,9 +230,20 @@ const DrillCard = ({ drill }: DrillCardProps) => {
 /**
  * Drill Creator Component
  */
+interface DrillFormData {
+  target_user_id: string;
+  threat_type: string;
+  context: {
+    shopping_sites: string[];
+    interests: string[];
+    family_structure: string;
+  };
+  scheduled_for: string;
+}
+
 interface DrillCreatorProps {
   familyMembers: FamilyMember[];
-  onSubmit: (data: any) => void;
+  onSubmit: (data: DrillFormData) => void;
   onCancel: () => void;
 }
 

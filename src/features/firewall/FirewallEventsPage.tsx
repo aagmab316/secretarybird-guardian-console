@@ -107,7 +107,7 @@ export function FirewallEventsPage() {
                     className="border-b border-slate-900/80 last:border-none"
                   >
                     <td className="whitespace-nowrap px-3 py-2 text-xs text-slate-300">
-                      {new Date(event.created_at).toLocaleString()}
+                      {new Date(event.created_at ?? event.occurred_at ?? "").toLocaleString()}
                     </td>
                     <td className="px-3 py-2">
                       <span className={riskBadgeClasses(event.risk_level)}>
@@ -119,7 +119,7 @@ export function FirewallEventsPage() {
                       {event.category}
                     </td>
                     <td className="px-3 py-2 text-xs text-slate-200">
-                      {event.subject_type}
+                      {event.subject_type ?? "—"}
                     </td>
                     <td className="px-3 py-2 text-xs text-slate-300">
                       {event.source}

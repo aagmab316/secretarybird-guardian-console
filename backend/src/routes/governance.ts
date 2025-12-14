@@ -82,7 +82,7 @@ function makeEventId(): string {
 
 // --- Cryptographic Integrity Helpers ---
 
-function stableStringify(value: any): string {
+function stableStringify(value: unknown): string {
   if (value === null || typeof value !== "object") return JSON.stringify(value);
 
   if (Array.isArray(value)) {
@@ -98,7 +98,7 @@ function sha256Hex(input: string): string {
   return crypto.createHash("sha256").update(input).digest("hex");
 }
 
-function calculateEventHash(payloadWithoutIntegrity: any, previousHash: string): string {
+function calculateEventHash(payloadWithoutIntegrity: unknown, previousHash: string): string {
   // Canonical, deterministic content
   const canonical = stableStringify(payloadWithoutIntegrity);
   return sha256Hex(canonical + previousHash);
@@ -124,7 +124,7 @@ function getLastEventHash(logPath: string): string {
       throw new Error("CRITICAL: Audit log chain corrupted or missing hash; refusing to append.");
     }
     return h;
-  } catch (e) {
+  } catch {
     // If we can't parse the last line, the log is corrupt.
     throw new Error("CRITICAL: Audit log corrupted (parse error); refusing to append.");
   }

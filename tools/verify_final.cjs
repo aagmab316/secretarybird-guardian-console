@@ -10,6 +10,11 @@ const PORT = 3001;
 const API_URL = `http://127.0.0.1:${PORT}/api/governance/harm-override/log`;
 const GOVERNANCE_KEY = process.env.SB_GOVERNANCE_API_KEY || "test-secret-key-12345-must-be-long-enough";
 
+if (!process.env.SB_GOVERNANCE_API_KEY) {
+  console.error("SB_GOVERNANCE_API_KEY is required");
+  process.exit(2);
+}
+
 let backendProcess = null;
 
 function log(msg) {
@@ -27,12 +32,11 @@ async function wait(ms) {
 async function startBackend() {
   return new Promise((resolve, reject) => {
     log("Starting backend...");
-    process.env.SB_GOVERNANCE_API_KEY = GOVERNANCE_KEY;
-    
     backendProcess = spawn("npx.cmd", ["tsx", "backend/src/server.ts"], {
       stdio: "pipe",
       shell: true,
-      cwd: path.join(__dirname, "..")
+      cwd: path.join(__dirname, ".."),
+      env: { ...process.env, SB_GOVERNANCE_API_KEY: GOVERNANCE_KEY }
     });
 
     let startupTimeout = setTimeout(() => {
@@ -263,3 +267,5 @@ main().catch(err => {
   error(`Fatal error: ${err.message}`);
   process.exit(1);
 });
+
+

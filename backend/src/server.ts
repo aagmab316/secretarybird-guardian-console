@@ -31,7 +31,7 @@ try {
 app.use(cors()); // Allow Frontend access
 app.use(express.json());
 
-app.use((err: any, _req: any, res: any, next: any) => {
+app.use((err: Error & { type?: string }, _req: express.Request, res: express.Response, next: express.NextFunction) => {
   if (err?.type === "entity.parse.failed") {
     return res.status(400).json({ ok: false, error: "Invalid JSON body" });
   }
@@ -77,3 +77,4 @@ setInterval(() => {
 process.stdin.resume();
 
 console.log('🔄 Process anchored - stdin + interval keepalive active');
+

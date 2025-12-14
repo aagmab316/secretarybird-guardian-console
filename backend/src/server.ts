@@ -31,6 +31,11 @@ try {
 app.use(cors()); // Allow Frontend access
 app.use(express.json());
 
+// 3. Mount Routes
+app.use('/api/drills', drillRoutes);
+app.use('/api', governanceRouter);
+
+// 4. Error Handler (must come after routes)
 app.use((err: Error & { type?: string }, _req: express.Request, res: express.Response, next: express.NextFunction) => {
   if (err?.type === "entity.parse.failed") {
     return res.status(400).json({ ok: false, error: "Invalid JSON body" });
@@ -38,11 +43,7 @@ app.use((err: Error & { type?: string }, _req: express.Request, res: express.Res
   return next(err);
 });
 
-// 3. Mount Routes
-app.use('/api/drills', drillRoutes);
-app.use('/api', governanceRouter);
-
-// 4. Health Check
+// 5. Health Check)
 app.get('/health', (req, res) =>
   res.json({ status: 'ok', version: '0.9.1-governance' }),
 );
@@ -77,4 +78,5 @@ setInterval(() => {
 process.stdin.resume();
 
 console.log('🔄 Process anchored - stdin + interval keepalive active');
+
 

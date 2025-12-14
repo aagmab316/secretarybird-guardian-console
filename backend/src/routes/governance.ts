@@ -14,9 +14,17 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // 1. Governance Auth Guard (Fail-Closed)
-const GOVERNANCE_KEY = process.env.SB_GOVERNANCE_API_KEY;
+const getGovernanceKey = () => {
+  const key = process.env.SB_GOVERNANCE_API_KEY;
+  if (!key) {
+    throw new Error(
+      "CRITICAL: SB_GOVERNANCE_API_KEY is not set. Governance endpoint cannot function."
+    );
+  }
+  return key;
+};
 
-if (!GOVERNANCE_KEY) {
+if (!getGovernanceKey()) {
   throw new Error(
     "CRITICAL: SB_GOVERNANCE_API_KEY is not set. Governance endpoint cannot start."
   );
@@ -28,7 +36,7 @@ if (!GOVERNANCE_KEY) {
 function isValidGovernanceKey(providedKey: string): boolean {
   try {
     const a = Buffer.from(providedKey);
-    const b = Buffer.from(GOVERNANCE_KEY!); // Non-null assertion safe due to check above
+    const b = Buffer.from(getGovernanceKey()!); // Non-null assertion safe due to check above
 
     // timingSafeEqual throws if lengths differ
     if (a.length !== b.length) return false;
@@ -226,3 +234,7 @@ router.post("/governance/harm-override/log", requireGovernanceKey, async (req, r
 });
 
 export { router as governanceRouter };
+
+
+
+

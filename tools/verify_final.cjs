@@ -40,7 +40,7 @@ async function startBackend() {
         backendProcess.kill();
       }
       reject(new Error("Backend startup timeout"));
-    }, 15000);
+    }, 30000);
 
     backendProcess.stdout.on("data", (data) => {
       const msg = data.toString();

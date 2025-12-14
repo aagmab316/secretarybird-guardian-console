@@ -31,6 +31,13 @@ try {
 app.use(cors()); // Allow Frontend access
 app.use(express.json());
 
+app.use((err: any, _req: any, res: any, next: any) => {
+  if (err?.type === "entity.parse.failed") {
+    return res.status(400).json({ ok: false, error: "Invalid JSON body" });
+  }
+  return next(err);
+});
+
 // 3. Mount Routes
 app.use('/api/drills', drillRoutes);
 app.use('/api', governanceRouter);

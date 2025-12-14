@@ -13,7 +13,8 @@
     "test:ui": "vitest --ui",
     "test:run": "vitest run",
     "coverage": "vitest run --coverage",
-    "verify:audit": "node tools/verify_integrity.js"
+    "verify:audit": "node tools/verify_integrity.js",
+    "verify:governance": "node tools/verify_final.cjs && node tools/verify_integrity.cjs"
   },
   "dependencies": {
     "ajv": "^8.17.1",

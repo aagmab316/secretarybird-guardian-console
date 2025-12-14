@@ -1,0 +1,17 @@
+{
+  "user_role": "adult",
+  "subject_role": "child",
+  "summary": "Credible imminent threat reported.",
+  "risk_assessment": {
+    "credible_risk": true,
+    "imminence": "imminent",
+    "severity": "severe",
+    "harm_domains": ["physical"],
+    "evidence_signals": ["explicit_threat"]
+  },
+  "actions_taken": ["escalated_to_human", "provide_resources"],
+  "override_applied": true,
+  "least_intrusive_means": true,
+  "proportionality": true,
+  "time_limited": true
+}

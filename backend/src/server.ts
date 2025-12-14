@@ -3,6 +3,7 @@ import express from 'express';
 import cors from 'cors';
 import { initDatabase } from './db/database.js';
 import drillRoutes from './routes/drillRoutes.js';
+import { governanceRouter } from './routes/governance.js';
 
 // 🚨 Global Error Traps
 process.on('uncaughtException', (err) => {
@@ -30,8 +31,16 @@ try {
 app.use(cors()); // Allow Frontend access
 app.use(express.json());
 
+app.use((err: Error & { type?: string }, _req: express.Request, res: express.Response, next: express.NextFunction) => {
+  if (err?.type === "entity.parse.failed") {
+    return res.status(400).json({ ok: false, error: "Invalid JSON body" });
+  }
+  return next(err);
+});
+
 // 3. Mount Routes
 app.use('/api/drills', drillRoutes);
+app.use('/api', governanceRouter);
 
 // 4. Health Check
 app.get('/health', (req, res) =>

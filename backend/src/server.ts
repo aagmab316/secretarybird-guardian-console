@@ -31,8 +31,10 @@ try {
 app.use(cors()); // Allow Frontend access
 app.use(express.json());
 
-app.use((err: Error & { type?: string }, _req: express.Request, res: express.Response, next: express.NextFunction) => {
-  if (err?.type === "entity.parse.failed") {
+// Error handler for JSON parse failures
+app.use((err: unknown, _req: express.Request, res: express.Response, next: express.NextFunction) => {
+  const error = err as Record<string, unknown>;
+  if (error?.type === "entity.parse.failed") {
     return res.status(400).json({ ok: false, error: "Invalid JSON body" });
   }
   return next(err);
